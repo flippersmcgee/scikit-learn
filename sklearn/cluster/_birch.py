@@ -490,11 +490,7 @@ class Birch(ClusterMixin, TransformerMixin, BaseEstimator):
             self.root_.prev_leaf_ = self.dummy_leaf_
 
         # Cannot vectorize. Enough to convince to use cython.
-        if not sparse.issparse(X):
-            iter_func = iter
-        else:
-            iter_func = _iterate_sparse_X
-
+        iter_func = iter if not sparse.issparse(X) else _iterate_sparse_X
         for sample in iter_func(X):
             subcluster = _CFSubcluster(linear_sum=sample)
             split = self.root_.insert_cf_subcluster(subcluster)

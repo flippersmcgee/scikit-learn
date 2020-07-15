@@ -73,7 +73,7 @@ if SETUPTOOLS_COMMANDS.intersection(sys.argv):
         },
     )
 else:
-    extra_setuptools_args = dict()
+    extra_setuptools_args = {}
 
 
 # Custom clean command to remove build artifacts
@@ -194,14 +194,14 @@ def check_package_status(package, min_version):
         package_status['up_to_date'] = False
         package_status['version'] = ""
 
-    req_str = "scikit-learn requires {} >= {}.\n".format(
-        package, min_version)
+    if not package_status['up_to_date']:
+        req_str = "scikit-learn requires {} >= {}.\n".format(
+            package, min_version)
 
-    instructions = ("Installation instructions are available on the "
-                    "scikit-learn website: "
-                    "http://scikit-learn.org/stable/install.html\n")
+        instructions = ("Installation instructions are available on the "
+                        "scikit-learn website: "
+                        "http://scikit-learn.org/stable/install.html\n")
 
-    if package_status['up_to_date'] is False:
         if package_status['version']:
             raise ImportError("Your installation of {} "
                               "{} is out-of-date.\n{}{}"

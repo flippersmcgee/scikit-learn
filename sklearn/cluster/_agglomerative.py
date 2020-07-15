@@ -534,7 +534,7 @@ def linkage_tree(X, connectivity=None, n_clusters=None, linkage='complete',
         distances = np.empty(n_nodes - n_samples)
     # create inertia heap and connection matrix
     A = np.empty(n_nodes, dtype=object)
-    inertia = list()
+    inertia = []
 
     # LIL seems to the best format to access the rows quickly,
     # without the numpy overhead of slicing CSR indices and data.

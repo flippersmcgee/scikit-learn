@@ -224,7 +224,7 @@ class IsotonicRegression(RegressorMixin, TransformerMixin, BaseEstimator):
         self.out_of_bounds = out_of_bounds
 
     def _check_input_data_shape(self, X):
-        if not (X.ndim == 1 or (X.ndim == 2 and X.shape[1] == 1)):
+        if X.ndim != 1 and (X.ndim != 2 or X.shape[1] != 1):
             msg = "Isotonic regression input X should be a 1d array or " \
                   "2d array with 1 feature"
             raise ValueError(msg)

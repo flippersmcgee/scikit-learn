@@ -145,10 +145,7 @@ class ShrunkCovariance(EmpiricalCovariance):
         X = self._validate_data(X)
         # Not calling the parent object to fit, to avoid a potential
         # matrix inversion when setting the precision
-        if self.assume_centered:
-            self.location_ = np.zeros(X.shape[1])
-        else:
-            self.location_ = X.mean(0)
+        self.location_ = np.zeros(X.shape[1]) if self.assume_centered else X.mean(0)
         covariance = empirical_covariance(
             X, assume_centered=self.assume_centered)
         covariance = shrunk_covariance(covariance, self.shrinkage)
@@ -417,10 +414,7 @@ class LedoitWolf(EmpiricalCovariance):
         # Not calling the parent object to fit, to avoid computing the
         # covariance matrix (and potentially the precision)
         X = self._validate_data(X)
-        if self.assume_centered:
-            self.location_ = np.zeros(X.shape[1])
-        else:
-            self.location_ = X.mean(0)
+        self.location_ = np.zeros(X.shape[1]) if self.assume_centered else X.mean(0)
         covariance, shrinkage = ledoit_wolf(X - self.location_,
                                             assume_centered=True,
                                             block_size=self.block_size)
@@ -593,11 +587,7 @@ class OAS(EmpiricalCovariance):
         X = self._validate_data(X)
         # Not calling the parent object to fit, to avoid computing the
         # covariance matrix (and potentially the precision)
-        if self.assume_centered:
-            self.location_ = np.zeros(X.shape[1])
-        else:
-            self.location_ = X.mean(0)
-
+        self.location_ = np.zeros(X.shape[1]) if self.assume_centered else X.mean(0)
         covariance, shrinkage = oas(X - self.location_, assume_centered=True)
         self.shrinkage_ = shrinkage
         self._set_covariance(covariance)

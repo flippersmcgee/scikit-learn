@@ -100,11 +100,11 @@ if __name__ == '__main__':
     results = compute_bench(samples_range, features_range)
     results_2 = compute_bench_2(chunks)
 
-    max_time = max([max(i) for i in [t for (label, t) in results.items()
-                                     if "speed" in label]])
-    max_inertia = max([max(i) for i in [
-        t for (label, t) in results.items()
-        if "speed" not in label]])
+    max_time = max(max(i) for i in [t for (label, t) in results.items()
+                                         if "speed" in label])
+    max_inertia = max(max(i) for i in [
+            t for (label, t) in results.items()
+            if "speed" not in label])
 
     fig = plt.figure('scikit-learn K-Means benchmark results')
     for c, (label, timings) in zip('brcy',

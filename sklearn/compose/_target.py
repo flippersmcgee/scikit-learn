@@ -184,10 +184,7 @@ class TransformedTargetRegressor(RegressorMixin, BaseEstimator):
 
         # transformers are designed to modify X which is 2d dimensional, we
         # need to modify y accordingly.
-        if y.ndim == 1:
-            y_2d = y.reshape(-1, 1)
-        else:
-            y_2d = y
+        y_2d = y.reshape(-1, 1) if y.ndim == 1 else y
         self._fit_transformer(y_2d)
 
         # transform y and convert back to 1d array if needed

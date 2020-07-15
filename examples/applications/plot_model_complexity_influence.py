@@ -72,19 +72,18 @@ np.random.seed(0)
 
 def generate_data(case):
     """Generate regression/classification data."""
-    if case == 'regression':
-        X, y = datasets.load_diabetes(return_X_y=True)
-    elif case == 'classification':
+    if case == 'classification':
         X, y = datasets.fetch_20newsgroups_vectorized(subset='all',
                                                       return_X_y=True)
+    elif case == 'regression':
+        X, y = datasets.load_diabetes(return_X_y=True)
     X, y = shuffle(X, y)
     offset = int(X.shape[0] * 0.8)
     X_train, y_train = X[:offset], y[:offset]
     X_test, y_test = X[offset:], y[offset:]
 
-    data = {'X_train': X_train, 'X_test': X_test, 'y_train': y_train,
+    return {'X_train': X_train, 'X_test': X_test, 'y_train': y_train,
             'y_test': y_test}
-    return data
 
 
 regression_data = generate_data('regression')

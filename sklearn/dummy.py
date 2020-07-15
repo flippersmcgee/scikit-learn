@@ -169,7 +169,7 @@ class DummyClassifier(MultiOutputMixin, ClassifierMixin, BaseEstimator):
 
         if self._strategy == "constant":
             for k in range(self.n_outputs_):
-                if not any(constant[k][0] == c for c in self.classes_[k]):
+                if all(constant[k][0] != c for c in self.classes_[k]):
                     # Checking in case of constant strategy if the constant
                     # provided by the user is in y.
                     err_msg = ("The constant target value must be present in "
@@ -296,7 +296,12 @@ class DummyClassifier(MultiOutputMixin, ClassifierMixin, BaseEstimator):
 
         P = []
         for k in range(self.n_outputs_):
-            if self._strategy == "most_frequent":
+            if self._strategy == "constant":
+                ind = np.where(classes_[k] == constant[k])
+                out = np.zeros((n_samples, n_classes_[k]), dtype=np.float64)
+                out[:, ind] = 1.0
+
+            elif self._strategy == "most_frequent":
                 ind = class_prior_[k].argmax()
                 out = np.zeros((n_samples, n_classes_[k]), dtype=np.float64)
                 out[:, ind] = 1.0
@@ -310,11 +315,6 @@ class DummyClassifier(MultiOutputMixin, ClassifierMixin, BaseEstimator):
             elif self._strategy == "uniform":
                 out = np.ones((n_samples, n_classes_[k]), dtype=np.float64)
                 out /= n_classes_[k]
-
-            elif self._strategy == "constant":
-                ind = np.where(classes_[k] == constant[k])
-                out = np.zeros((n_samples, n_classes_[k]), dtype=np.float64)
-                out[:, ind] = 1.0
 
             P.append(out)
 
@@ -485,7 +485,23 @@ class DummyRegressor(MultiOutputMixin, RegressorMixin, BaseEstimator):
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
 
-        if self.strategy == "mean":
+        if self.strategy == "constant":
+            if self.constant is None:
+                raise TypeError("Constant target value has to be specified "
+                                "when the constant strategy is used.")
+
+            self.constant = check_array(self.constant,
+                                        accept_sparse=['csr', 'csc', 'coo'],
+                                        ensure_2d=False, ensure_min_samples=0)
+
+            if self.n_outputs_ != 1 and self.constant.shape[0] != y.shape[1]:
+                raise ValueError(
+                    "Constant target value should have "
+                    "shape (%d, 1)." % y.shape[1])
+
+            self.constant_ = self.constant
+
+        elif self.strategy == "mean":
             self.constant_ = np.average(y, axis=0, weights=sample_weight)
 
         elif self.strategy == "median":
@@ -508,22 +524,6 @@ class DummyRegressor(MultiOutputMixin, RegressorMixin, BaseEstimator):
                 self.constant_ = [_weighted_percentile(y[:, k], sample_weight,
                                                        percentile=percentile)
                                   for k in range(self.n_outputs_)]
-
-        elif self.strategy == "constant":
-            if self.constant is None:
-                raise TypeError("Constant target value has to be specified "
-                                "when the constant strategy is used.")
-
-            self.constant = check_array(self.constant,
-                                        accept_sparse=['csr', 'csc', 'coo'],
-                                        ensure_2d=False, ensure_min_samples=0)
-
-            if self.n_outputs_ != 1 and self.constant.shape[0] != y.shape[1]:
-                raise ValueError(
-                    "Constant target value should have "
-                    "shape (%d, 1)." % y.shape[1])
-
-            self.constant_ = self.constant
 
         self.constant_ = np.reshape(self.constant_, (1, -1))
         return self
