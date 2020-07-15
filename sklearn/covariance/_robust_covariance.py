@@ -402,17 +402,14 @@ def fast_mcd(X, support_fraction=None,
             support[np.argsort(np.abs(X_centered), 0)[:n_support]] = True
             covariance = np.asarray([[np.var(X[support])]])
             location = np.array([location])
-            # get precision matrix in an optimized way
-            precision = linalg.pinvh(covariance)
-            dist = (np.dot(X_centered, precision) * (X_centered)).sum(axis=1)
         else:
             support = np.ones(n_samples, dtype=bool)
             covariance = np.asarray([[np.var(X)]])
             location = np.asarray([np.mean(X)])
             X_centered = X - location
-            # get precision matrix in an optimized way
-            precision = linalg.pinvh(covariance)
-            dist = (np.dot(X_centered, precision) * (X_centered)).sum(axis=1)
+        # get precision matrix in an optimized way
+        precision = linalg.pinvh(covariance)
+        dist = (np.dot(X_centered, precision) * (X_centered)).sum(axis=1)
     # Starting FastMCD algorithm for p-dimensional case
     if (n_samples > 500) and (n_features > 1):
         # 1. Find candidate supports on subsets
@@ -456,10 +453,7 @@ def fast_mcd(X, support_fraction=None,
         n_samples_merged = min(1500, n_samples)
         h_merged = int(np.ceil(n_samples_merged *
                        (n_support / float(n_samples))))
-        if n_samples > 1500:
-            n_best_merged = 10
-        else:
-            n_best_merged = 1
+        n_best_merged = 10 if n_samples > 1500 else 1
         # find the best couples (location, covariance) on the merged set
         selection = random_state.permutation(n_samples)[:n_samples_merged]
         locations_merged, covariances_merged, supports_merged, d = \

@@ -30,8 +30,8 @@ def test_graphical_lasso(random_state=0):
     emp_cov = empirical_covariance(X)
 
     for alpha in (0., .1, .25):
-        covs = dict()
-        icovs = dict()
+        covs = {}
+        icovs = {}
         for method in ('cd', 'lars'):
             cov_, icov_, costs = graphical_lasso(emp_cov, return_costs=True,
                                                  alpha=alpha, mode=method)
@@ -39,7 +39,7 @@ def test_graphical_lasso(random_state=0):
             icovs[method] = icov_
             costs, dual_gap = np.array(costs).T
             # Check that the costs always decrease (doesn't hold if alpha == 0)
-            if not alpha == 0:
+            if alpha != 0:
                 assert_array_less(np.diff(costs), 0)
         # Check that the 2 approaches give similar results
         assert_array_almost_equal(covs['cd'], covs['lars'], decimal=4)
@@ -54,7 +54,7 @@ def test_graphical_lasso(random_state=0):
     # For a centered matrix, assume_centered could be chosen True or False
     # Check that this returns indeed the same result for centered data
     Z = X - X.mean(0)
-    precs = list()
+    precs = []
     for assume_centered in (False, True):
         prec_ = GraphicalLasso(
             assume_centered=assume_centered).fit(Z).precision_

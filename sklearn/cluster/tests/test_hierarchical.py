@@ -392,7 +392,7 @@ def test_ward_tree_children_order():
     rng = np.random.RandomState(0)
 
     connectivity = np.ones((n, n))
-    for i in range(5):
+    for _ in range(5):
         X = .1 * rng.normal(size=(n, p))
         X -= 4. * np.arange(n)[:, np.newaxis]
         X -= X.mean(axis=1)[:, np.newaxis]
@@ -412,7 +412,7 @@ def test_ward_linkage_tree_return_distance():
     rng = np.random.RandomState(0)
 
     connectivity = np.ones((n, n))
-    for i in range(5):
+    for _ in range(5):
         X = .1 * rng.normal(size=(n, p))
         X -= 4. * np.arange(n)[:, np.newaxis]
         X -= X.mean(axis=1)[:, np.newaxis]

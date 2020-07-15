@@ -786,8 +786,7 @@ class QuadraticDiscriminantAnalysis(ClassifierMixin, BaseEstimator):
         C : ndarray of shape (n_samples,)
         """
         d = self._decision_function(X)
-        y_pred = self.classes_.take(d.argmax(1))
-        return y_pred
+        return self.classes_.take(d.argmax(1))
 
     def predict_proba(self, X):
         """Return posterior probabilities of classification.

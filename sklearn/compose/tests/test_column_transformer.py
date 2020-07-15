@@ -784,7 +784,7 @@ def test_column_transformer_special_strings():
     assert ct.transformers_[-1][0] != 'remainder'
 
     # None itself / other string is not valid
-    for val in [None, 'other']:
+    for _ in [None, 'other']:
         ct = ColumnTransformer(
             [('trans1', Trans(), [0]), ('trans2', None, [1])])
         assert_raise_message(TypeError, "All estimators should implement",

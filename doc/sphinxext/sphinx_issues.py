@@ -49,11 +49,7 @@ def user_role(name, rawtext, text, lineno, inliner, options=None, content=None):
         ref = config.issues_user_uri.format(user=target)
     else:
         ref = "https://github.com/{0}".format(target)
-    if has_explicit_title:
-        text = title
-    else:
-        text = "@{0}".format(target)
-
+    text = title if has_explicit_title else "@{0}".format(target)
     link = nodes.reference(text=text, refuri=ref, **options)
     return [link], []
 
@@ -92,11 +88,11 @@ class IssueRole(object):
         return "#{0}".format(issue_no)
 
     def make_node(self, name, issue_no, config, options=None):
-        name_map = {"pr": "pull", "issue": "issues", "commit": "commit"}
         options = options or {}
         repo_match = self.EXTERNAL_REPO_REGEX.match(issue_no)
         if repo_match:  # External repo
             username, repo, symbol, issue = repo_match.groups()
+            name_map = {"pr": "pull", "issue": "issues", "commit": "commit"}
             if name not in name_map:
                 raise ValueError(
                     "External repo linking not supported for :{}:".format(name)

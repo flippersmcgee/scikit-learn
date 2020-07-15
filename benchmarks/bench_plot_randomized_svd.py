@@ -238,21 +238,17 @@ def svd_timing(X, n_comps, n_iter, n_oversamples,
     Measure time for decomposition
     """
     print("... running SVD ...")
+    gc.collect()
+    t0 = time()
     if method is not 'fbpca':
-        gc.collect()
-        t0 = time()
         U, mu, V = randomized_svd(X, n_comps, n_oversamples, n_iter,
                                   power_iteration_normalizer,
                                   random_state=random_state, transpose=False)
-        call_time = time() - t0
     else:
-        gc.collect()
-        t0 = time()
         # There is a different convention for l here
         U, mu, V = fbpca.pca(X, n_comps, raw=True, n_iter=n_iter,
                              l=n_oversamples+n_comps)
-        call_time = time() - t0
-
+    call_time = time() - t0
     return U, mu, V, call_time
 
 
@@ -420,7 +416,7 @@ def bench_c(datasets, n_comps):
             f = scalable_frobenius_norm_discrepancy(X, U, s, V)
             all_frobenius[label].append(f / X_fro_norm)
 
-    if len(all_time) == 0:
+    if not all_time:
         raise ValueError("No tests ran. Aborting.")
 
     if enable_spectral_norm:

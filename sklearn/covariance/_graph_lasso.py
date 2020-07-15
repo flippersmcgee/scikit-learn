@@ -180,10 +180,7 @@ def graphical_lasso(emp_cov, alpha, *, cov_init=None, mode='cd', tol=1e-4,
                 return emp_cov, linalg.inv(emp_cov), 0
             else:
                 return emp_cov, linalg.inv(emp_cov)
-    if cov_init is None:
-        covariance_ = emp_cov.copy()
-    else:
-        covariance_ = cov_init.copy()
+    covariance_ = emp_cov.copy() if cov_init is None else cov_init.copy()
     # As a trivial regularization (Tikhonov like), we scale down the
     # off-diagonal coefficients of our starting point: This is needed, as
     # in the cross-validation the cov_init can easily be
@@ -196,7 +193,7 @@ def graphical_lasso(emp_cov, alpha, *, cov_init=None, mode='cd', tol=1e-4,
     precision_ = linalg.pinvh(covariance_)
 
     indices = np.arange(n_features)
-    costs = list()
+    costs = []
     # The different l1 regression solver have different numerical errors
     if mode == 'cd':
         errors = dict(over='raise', invalid='ignore')
@@ -395,10 +392,7 @@ class GraphicalLasso(EmpiricalCovariance):
         X = self._validate_data(X, ensure_min_features=2, ensure_min_samples=2,
                                 estimator=self)
 
-        if self.assume_centered:
-            self.location_ = np.zeros(X.shape[1])
-        else:
-            self.location_ = X.mean(0)
+        self.location_ = np.zeros(X.shape[1]) if self.assume_centered else X.mean(0)
         emp_cov = empirical_covariance(
             X, assume_centered=self.assume_centered)
         self.covariance_, self.precision_, self.n_iter_ = graphical_lasso(
@@ -469,13 +463,10 @@ def graphical_lasso_path(X, alphas, cov_init=None, X_test=None, mode='cd',
     """
     inner_verbose = max(0, verbose - 1)
     emp_cov = empirical_covariance(X)
-    if cov_init is None:
-        covariance_ = emp_cov.copy()
-    else:
-        covariance_ = cov_init
+    covariance_ = emp_cov.copy() if cov_init is None else cov_init
     covariances_ = list()
-    precisions_ = list()
-    scores_ = list()
+    precisions_ = []
+    scores_ = []
     if X_test is not None:
         test_emp_cov = empirical_covariance(X_test)
 
@@ -701,17 +692,14 @@ class GraphicalLassoCV(GraphicalLasso):
         """
         # Covariance does not make sense for a single feature
         X = self._validate_data(X, ensure_min_features=2, estimator=self)
-        if self.assume_centered:
-            self.location_ = np.zeros(X.shape[1])
-        else:
-            self.location_ = X.mean(0)
+        self.location_ = np.zeros(X.shape[1]) if self.assume_centered else X.mean(0)
         emp_cov = empirical_covariance(
             X, assume_centered=self.assume_centered)
 
         cv = check_cv(self.cv, y, classifier=False)
 
         # List of (alpha, scores, covs)
-        path = list()
+        path = []
         n_alphas = self.alphas
         inner_verbose = max(0, self.verbose - 1)
 
@@ -778,8 +766,7 @@ class GraphicalLassoCV(GraphicalLasso):
                 # non-zero coefficients
                 alpha_1 = path[0][0]
                 alpha_0 = path[1][0]
-            elif (best_index == last_finite_idx
-                    and not best_index == len(path) - 1):
+            elif best_index == last_finite_idx and best_index != len(path) - 1:
                 # We have non-converged models on the upper bound of the
                 # grid, we need to refine the grid there
                 alpha_1 = path[best_index][0]

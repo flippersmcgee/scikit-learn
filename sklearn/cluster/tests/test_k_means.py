@@ -298,7 +298,7 @@ def test_all_init(Estimator, data, init):
 def test_minibatch_kmeans_partial_fit_init(init):
     # Check MiniBatchKMeans init with partial_fit
     km = MiniBatchKMeans(init=init, n_clusters=n_clusters, random_state=0)
-    for i in range(100):
+    for _ in range(100):
         # "random" init requires many batches to recover the true labels.
         km.partial_fit(X)
     _check_fitted_model(km)
@@ -411,7 +411,7 @@ def test_minibatch_sensible_reassign_partial_fit():
                                        cluster_std=1., random_state=42)
     zeroed_X[::2, :] = 0
     mb_k_means = MiniBatchKMeans(n_clusters=20, random_state=42, init="random")
-    for i in range(100):
+    for _ in range(100):
         mb_k_means.partial_fit(zeroed_X)
     # there should not be too many exact zero cluster centers
     assert mb_k_means.cluster_centers_.any(axis=1).sum() > 10

@@ -262,11 +262,8 @@ class ColumnTransformer(TransformerMixin, _BaseComposition):
                     trans = FunctionTransformer(
                         accept_sparse=True, check_inverse=False
                     )
-                elif trans == 'drop':
+                elif trans == 'drop' or _is_empty_column_selection(column):
                     continue
-                elif _is_empty_column_selection(column):
-                    continue
-
             yield (name, trans, column, get_weight(name))
 
     def _validate_transformers(self):
@@ -406,7 +403,7 @@ class ColumnTransformer(TransformerMixin, _BaseComposition):
         names = [name for name, _, _, _ in self._iter(fitted=True,
                                                       replace_strings=True)]
         for Xs, name in zip(result, names):
-            if not getattr(Xs, 'ndim', 0) == 2:
+            if getattr(Xs, 'ndim', 0) != 2:
                 raise ValueError(
                     "The output of the '{0}' transformer should be 2D (scipy "
                     "matrix, array, or pandas DataFrame).".format(name))
@@ -572,11 +569,7 @@ class ColumnTransformer(TransformerMixin, _BaseComposition):
         """
         check_is_fitted(self)
         X = _check_X(X)
-        if hasattr(X, "columns"):
-            X_feature_names = np.asarray(X.columns)
-        else:
-            X_feature_names = None
-
+        X_feature_names = np.asarray(X.columns) if hasattr(X, "columns") else None
         if self._n_features > X.shape[1]:
             raise ValueError('Number of features of the input must be equal '
                              'to or greater than that of the fitted '
@@ -673,8 +666,7 @@ def _get_transformer_list(estimators):
     transformers, columns = zip(*estimators)
     names, _ = zip(*_name_estimators(transformers))
 
-    transformer_list = list(zip(names, transformers, columns))
-    return transformer_list
+    return list(zip(names, transformers, columns))
 
 
 def make_column_transformer(*transformers,

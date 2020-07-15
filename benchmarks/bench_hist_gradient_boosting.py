@@ -255,7 +255,7 @@ axs[1].set_title('fit duration (s)')
 axs[2].set_title('score duration (s)')
 
 title = args.problem
-if args.problem == 'classification':
+if title == 'classification':
     title += ' n_classes = {}'.format(args.n_classes)
 fig.suptitle(title)
 

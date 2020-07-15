@@ -204,8 +204,7 @@ def _naive_ledoit_wolf_shrinkage(X):
         * np.sum(np.dot(X2.T, X2) / n_samples - emp_cov ** 2)
 
     beta = min(beta_, delta)
-    shrinkage = beta / delta
-    return shrinkage
+    return beta / delta
 
 
 def test_ledoit_wolf_small():

@@ -166,10 +166,7 @@ class EmpiricalCovariance(BaseEstimator):
         # set covariance
         self.covariance_ = covariance
         # set precision
-        if self.store_precision:
-            self.precision_ = linalg.pinvh(covariance)
-        else:
-            self.precision_ = None
+        self.precision_ = linalg.pinvh(covariance) if self.store_precision else None
 
     def get_precision(self):
         """Getter for the precision matrix.
@@ -203,10 +200,7 @@ class EmpiricalCovariance(BaseEstimator):
         self : object
         """
         X = self._validate_data(X)
-        if self.assume_centered:
-            self.location_ = np.zeros(X.shape[1])
-        else:
-            self.location_ = X.mean(0)
+        self.location_ = np.zeros(X.shape[1]) if self.assume_centered else X.mean(0)
         covariance = empirical_covariance(
             X, assume_centered=self.assume_centered)
         self._set_covariance(covariance)

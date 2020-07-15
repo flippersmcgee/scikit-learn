@@ -270,11 +270,7 @@ class OPTICS(ClusterMixin, BaseEstimator):
                 predecessor_correction=self.predecessor_correction)
             self.cluster_hierarchy_ = clusters_
         elif self.cluster_method == 'dbscan':
-            if self.eps is None:
-                eps = self.max_eps
-            else:
-                eps = self.eps
-
+            eps = self.max_eps if self.eps is None else self.eps
             if eps > self.max_eps:
                 raise ValueError('Specify an epsilon smaller than %s. Got %s.'
                                  % (self.max_eps, eps))
